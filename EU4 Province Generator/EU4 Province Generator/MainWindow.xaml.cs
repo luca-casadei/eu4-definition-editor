@@ -51,14 +51,14 @@ namespace EU4_Province_Generator
             }
         }
         private static bool message;
-        private static ProvinceDefinition DefinisciProvincia(TextBox npr, TextBox txr, TextBox txg, TextBox txb, TextBox desc1, TextBox desc2)
+        private ProvinceDefinition DefinisciProvincia()
         {
-            int n = int.Parse(npr.Text);
-            int r = int.Parse(txr.Text);
-            int g = int.Parse(txg.Text);
-            int b = int.Parse(txb.Text);
-            string d1 = desc1.Text.Trim(' ');
-            string d2 = desc2.Text.Trim(' ');
+            int n = int.Parse(TxtProvNum.Text);
+            int r = int.Parse(TxtRedDef.Text);
+            int g = int.Parse(TxtGreenDef.Text);
+            int b = int.Parse(TxtBlueDef.Text);
+            string d1 = TxtDef1.Text.Trim(' ');
+            string d2 = TxtDef2.Text.Trim(' ');
             ProvinceDefinition provincia = new ProvinceDefinition(n, r, g, b, d1, d2);
             return provincia;
         }
@@ -71,7 +71,7 @@ namespace EU4_Province_Generator
             TxtRedDef.Background = Brushes.White;
             BtnAdd.IsEnabled = true;
             //Controllo presenza doppie.
-            ProvinceDefinition provincia = DefinisciProvincia(TxtProvNum, TxtRedDef, TxtGreenDef, TxtBlueDef, TxtDef1, TxtDef2);
+            ProvinceDefinition provincia = DefinisciProvincia();
             StreamReader leggi = new StreamReader(TxtDefPath.Text, Encoding.Default);
             int z = 0;
             while (!leggi.EndOfStream)

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EU4_Province_Generator"
         mc:Ignorable="d"
         Icon="icon.ico"
-        Loaded="Window_Loaded" ResizeMode="CanMinimize" Title="Europa Universalis 4 - Province Checker - Luca Casadei / Lucasadeij" Height="600" Width="1200">
+        Loaded="Window_Loaded" ResizeMode="CanMinimize" Title="Europa Universalis 4 - Province Definition Editor v1.0 - Luca Casadei / Dixit-Dominus" Height="600" Width="1200">
     <Grid>
         <!-- Righe -->
         <Grid.RowDefinitions>
