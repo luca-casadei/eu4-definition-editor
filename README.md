@@ -13,4 +13,4 @@ This is a WPF app that can be used to easily edit the EU4 **definition.csv** fil
  4. Finally click the "Add" button to place the record into the csv file.
  
 ## Downloads
-Version **1.0.6**: https://drive.google.com/file/d/1zeC76q-T06RbMhOxw0YHIoPgPWbtCbYt/view?usp=sharing
+Version **1.0.6**: https://github.com/Dixit-Dominus/eu4-definition-editor/releases/download/v1.0.6f/EU4.Province.Generator.exe
