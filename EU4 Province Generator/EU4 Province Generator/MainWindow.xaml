@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EU4_Province_Generator"
         mc:Ignorable="d"
         Icon="icon.ico"
-        Loaded="Window_Loaded" ResizeMode="CanMinimize" Title="Europa Universalis 4 - Province Definition Editor v1.0 - Luca Casadei / Dixit-Dominus" Height="600" Width="1200">
+        Loaded="Window_Loaded" ResizeMode="CanMinimize" Title="Europa Universalis 4 - Province Definition Editor v1.0.5 - Luca Casadei / Dixit-Dominus" Height="600" Width="1200">
     <Grid>
         <!-- Righe -->
         <Grid.RowDefinitions>
@@ -31,7 +31,7 @@
         <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="15,90,15,15" BorderBrush="Gray" BorderThickness="1">
             <StackPanel >
                 <Label Content="Provinces:" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="15" BorderBrush="Gray" BorderThickness="1"/>
-                <ListBox x:Name="LstProv" FontSize="15" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="10" Height="352"/>
+                <ListBox  KeyDown="LstProv_KeyDown" x:Name="LstProv" FontSize="15" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="10" Height="340"/>
             </StackPanel>
         </Border>
 

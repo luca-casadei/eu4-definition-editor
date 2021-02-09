@@ -29,37 +29,17 @@ namespace EU4_Province_Generator
             InitializeComponent();
         }
 
-        //Definizioni delle province.
-        private struct ProvinceDefinition
+        private bool message;
+        private List<Provincia> listaProvince;
+        private Provincia DefinisciProvincia()
         {
-            public int provNumber;
-            public int red;
-            public int green;
-            public int blue;
-            public string desc1;
-            public string desc2;
-
-            //Costruttori.
-            public ProvinceDefinition(int n, int r, int g, int b, string d1, string d2)
-            {
-                this.provNumber = n;
-                this.red = r;
-                this.green = g;
-                this.blue = b;
-                this.desc1 = d1;
-                this.desc2 = d2;
-            }
-        }
-        private static bool message;
-        private ProvinceDefinition DefinisciProvincia()
-        {
-            int n = int.Parse(TxtProvNum.Text);
-            int r = int.Parse(TxtRedDef.Text);
-            int g = int.Parse(TxtGreenDef.Text);
-            int b = int.Parse(TxtBlueDef.Text);
+            string n = TxtProvNum.Text;
+            string r = TxtRedDef.Text;
+            string g = TxtGreenDef.Text;
+            string b = TxtBlueDef.Text;
             string d1 = TxtDef1.Text.Trim(' ');
             string d2 = TxtDef2.Text.Trim(' ');
-            ProvinceDefinition provincia = new ProvinceDefinition(n, r, g, b, d1, d2);
+            Provincia provincia = new Provincia(n, r, g, b, d1, d2);
             return provincia;
         }
 
@@ -71,7 +51,7 @@ namespace EU4_Province_Generator
             TxtRedDef.Background = Brushes.White;
             BtnAdd.IsEnabled = true;
             //Controllo presenza doppie.
-            ProvinceDefinition provincia = DefinisciProvincia();
+            Provincia provincia = DefinisciProvincia();
             StreamReader leggi = new StreamReader(TxtDefPath.Text, Encoding.Default);
             int z = 0;
             while (!leggi.EndOfStream)
@@ -92,20 +72,20 @@ namespace EU4_Province_Generator
                         {
                             MessageBox.Show($"The program found some unexpected or incomplete values at line - {z} -, the colors of these lines will be ignored.", "Incomplete values.", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         }
-                        if (int.Parse(splitted[0]) == provincia.provNumber)
+                        if (splitted[0] == provincia)
                         {
                             TxtProvNum.Background = Brushes.LightYellow;
                             BdRGB.Background = Brushes.LightCoral;
-                            TxtErrorLine.Text = z.ToString();
+                            TxtErrorLine.Text = (z).ToString();
                             BtnAdd.IsEnabled = false;
                             k = false;
                         }
                     }
                     else if ((splitted.Length == 5) || (splitted.Length >= 6))
                     {
-                        if ((int.Parse(splitted[0]) == provincia.provNumber) || ((int.Parse(splitted[1]) == provincia.red) && (int.Parse(splitted[2]) == provincia.green) && (int.Parse(splitted[3]) == provincia.blue)))
+                        if ((splitted[0] == provincia) || ((splitted[1] == provincia.red) && (splitted[2] == provincia.green) && (splitted[3] == provincia.blue)))
                         {
-                            if (int.Parse(splitted[0]) == provincia.provNumber)
+                            if (splitted[0] == provincia)
                             {
                                 TxtProvNum.Background = Brushes.LightYellow;
                             }
@@ -116,7 +96,7 @@ namespace EU4_Province_Generator
                                 TxtRedDef.Background = Brushes.LightYellow;
                             }
                             BdRGB.Background = Brushes.LightCoral;
-                            TxtErrorLine.Text = z.ToString();
+                            TxtErrorLine.Text = (z).ToString();
                             BtnAdd.IsEnabled = false;
                             k = false;
                         }
@@ -156,13 +136,15 @@ namespace EU4_Province_Generator
                     int z = 0;
                     while (!leggi.EndOfStream)
                     {
+                        string provincia = leggi.ReadLine();
+                        listaProvince.Add(new Provincia(provincia.Split(';')));
+                        LstProv.Items.Add("Line: " + z.ToString().PadRight(5) + " - ".PadRight(20) + provincia.Replace(";", " | "));
                         z++;
-                        LstProv.Items.Add("Line: " + z + " - ".PadRight(20) + leggi.ReadLine().Replace(";", " | "));
                     }
                 }
                 catch (NullReferenceException)
                 {
-                    MessageBox.Show("The file has been moved or doesn't exhist anymore.", "NullReferenceException", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("The file has been moved or doesn't exist anymore.", "NullReferenceException", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 finally
                 {
@@ -222,6 +204,7 @@ namespace EU4_Province_Generator
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             message = false;
+            listaProvince = new List<Provincia>();
             TxtDef1.Text = "x";
             TxtDef2.Text = "x";
         }
@@ -250,16 +233,45 @@ namespace EU4_Province_Generator
             LstProv.Items.Clear();
             while (!leggi.EndOfStream)
             {
-                LstProv.Items.Add("Line: " + z + " - ".PadRight(20) + leggi.ReadLine().Replace(";", " | "));
+                string provincia = leggi.ReadLine();
+                listaProvince.Add(new Provincia(provincia.Split(';')));
+                LstProv.Items.Add("Line: " + z.ToString().PadRight(5) + " - ".PadRight(20) + provincia.Replace(";", " | "));
                 z++;
             }
             leggi.Close();
+            TxtDef1.Text = "x";
+            TxtDef2.Text = "x";
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
+        }
+
+        private void Riscrivi()
+        {
+            StreamWriter sc = new StreamWriter(percorso, false, Encoding.Default);
+            foreach (Provincia p in listaProvince)
+            {
+                sc.WriteLine(p);
+            }
+            sc.Close();
+        }
+
+        private void LstProv_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                Provincia p = listaProvince[LstProv.SelectedIndex];
+                if(MessageBox.Show($"This province definition record will be deleted permanently:\nNumber: {p.ProvNumber} - Red: {p.red} - Green: {p.green} - Blue: {p.blue} - Name: {p.desc1} - {p.desc2}", "Delete Definition", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+                {
+                    int index = LstProv.SelectedIndex;
+                    listaProvince.RemoveAt(index);
+                    LstProv.Items.RemoveAt(index);
+                    Riscrivi();
+                }
+            }
         }
     }
 }
