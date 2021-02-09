@@ -77,7 +77,7 @@ namespace EU4_Province_Generator
         //Metodi ToString per la scrittura su file.
         public string ToString(bool comma)
         {
-            return comma ? $"{ProvNumber};{red};{green};{blue};{desc1};{desc2}": $"{ProvNumber}|{red}|{green}|{blue}|{desc1}|{desc2}";
+            return comma ? $"{ProvNumber} ; {red} ; {green} ; {blue} ; {desc1} ; {desc2}": $"{ProvNumber} | {red} | {green} | {blue} | {desc1} | {desc2}";
         }
 
         public override string ToString()

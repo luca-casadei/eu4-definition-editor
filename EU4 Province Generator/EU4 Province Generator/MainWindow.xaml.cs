@@ -134,11 +134,11 @@ namespace EU4_Province_Generator
                 {
                     leggi = new StreamReader(TxtDefPath.Text, Encoding.Default);
                     int z = 0;
+                    listaProvince.Clear();
                     while (!leggi.EndOfStream)
                     {
                         string provincia = leggi.ReadLine();
                         listaProvince.Add(new Provincia(provincia.Split(';')));
-                        LstProv.Items.Add("Line: " + z.ToString().PadRight(5) + " - ".PadRight(20) + provincia.Replace(";", " | "));
                         z++;
                     }
                 }
@@ -149,6 +149,7 @@ namespace EU4_Province_Generator
                 finally
                 {
                     leggi.Close();
+                    AggiornaTutto();
                 }
             }
         }
@@ -229,16 +230,14 @@ namespace EU4_Province_Generator
             scrivazza.Close();
             BtnAdd.IsEnabled = false;
             StreamReader leggi = new StreamReader(TxtDefPath.Text, Encoding.Default);
-            int z = 0;
             LstProv.Items.Clear();
             while (!leggi.EndOfStream)
             {
                 string provincia = leggi.ReadLine();
                 listaProvince.Add(new Provincia(provincia.Split(';')));
-                LstProv.Items.Add("Line: " + z.ToString().PadRight(5) + " - ".PadRight(20) + provincia.Replace(";", " | "));
-                z++;
             }
             leggi.Close();
+            AggiornaTutto();
             TxtDef1.Text = "x";
             TxtDef2.Text = "x";
         }
@@ -247,6 +246,15 @@ namespace EU4_Province_Generator
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
+        }
+
+        private void AggiornaLista()
+        {
+            LstProv.Items.Clear();
+            for (int i = 0; i < listaProvince.Count; i++)
+            {
+                LstProv.Items.Add($"Line: {i}".PadRight(20) + listaProvince[i].ToString(false));
+            }
         }
 
         private void Riscrivi()
@@ -259,6 +267,12 @@ namespace EU4_Province_Generator
             sc.Close();
         }
 
+        private void AggiornaTutto()
+        {
+            Riscrivi();
+            AggiornaLista();
+        }
+
         private void LstProv_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)
@@ -268,8 +282,7 @@ namespace EU4_Province_Generator
                 {
                     int index = LstProv.SelectedIndex;
                     listaProvince.RemoveAt(index);
-                    LstProv.Items.RemoveAt(index);
-                    Riscrivi();
+                    AggiornaTutto();
                 }
             }
         }
