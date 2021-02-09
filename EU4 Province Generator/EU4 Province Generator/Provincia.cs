@@ -57,8 +57,8 @@ namespace EU4_Province_Generator
             {
                 this.ProvNumber = array[0];
                 this.red = array[1];
-                this.blue = array[2];
-                this.green = array[3];
+                this.green = array[2];
+                this.blue = array[3];
                 this.desc1 = "x";
                 this.desc2 = "x";
                 if (array.Length == 5)

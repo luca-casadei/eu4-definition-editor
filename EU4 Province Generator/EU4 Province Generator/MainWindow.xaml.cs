@@ -23,14 +23,17 @@ namespace EU4_Province_Generator
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Attributi di istanza della finestra.
+        private List<Provincia> listaProvince;
+        private bool message;
         private static string percorso;
+       //Costruttore.
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private bool message;
-        private List<Provincia> listaProvince;
+        //Metodo per la definizione di una provincia da window.
         private Provincia DefinisciProvincia()
         {
             string n = TxtProvNum.Text;
@@ -43,6 +46,7 @@ namespace EU4_Province_Generator
             return provincia;
         }
 
+        //Verifica della presenza di province doppie.
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
             TxtProvNum.Background = Brushes.White;
@@ -137,8 +141,11 @@ namespace EU4_Province_Generator
                     listaProvince.Clear();
                     while (!leggi.EndOfStream)
                     {
-                        string provincia = leggi.ReadLine();
-                        listaProvince.Add(new Provincia(provincia.Split(';')));
+                        string[] provincia = leggi.ReadLine().Split(';');
+                        if (provincia[0] != string.Empty)
+                        {
+                            listaProvince.Add(new Provincia(provincia));
+                        }
                         z++;
                     }
                 }
@@ -154,6 +161,7 @@ namespace EU4_Province_Generator
             }
         }
 
+        //Al cambio dei valori delle caselle per l'aggiunta di una provincia.
         private void TxtProv_TextChanged(object sender, TextChangedEventArgs e)
         {
             BtnAdd.IsEnabled = false;
@@ -192,6 +200,7 @@ namespace EU4_Province_Generator
             }
         }
 
+        //Metodi per il messaggio di linee incomplete.
         private void ChkLines_Unchecked(object sender, RoutedEventArgs e)
         {
             message = false;
@@ -202,6 +211,7 @@ namespace EU4_Province_Generator
             message = true;
         }
 
+        //Creazione della finestra con tutti gli oggetti.
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             message = false;
@@ -210,6 +220,7 @@ namespace EU4_Province_Generator
             TxtDef2.Text = "x";
         }
 
+        //Generazione di un colore random.
         private void BtnRandom_Click(object sender, RoutedEventArgs e)
         {
             BdRGB.Background = Brushes.AliceBlue;
@@ -223,6 +234,7 @@ namespace EU4_Province_Generator
             TxtRedDef.Background = Brushes.White;
         }
 
+        //Aggiunta di una provincia al file.
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             StreamWriter scrivazza = new StreamWriter(percorso, true, Encoding.Default);
@@ -231,10 +243,14 @@ namespace EU4_Province_Generator
             BtnAdd.IsEnabled = false;
             StreamReader leggi = new StreamReader(TxtDefPath.Text, Encoding.Default);
             LstProv.Items.Clear();
+            listaProvince.Clear();
             while (!leggi.EndOfStream)
             {
-                string provincia = leggi.ReadLine();
-                listaProvince.Add(new Provincia(provincia.Split(';')));
+                string[] provincia = leggi.ReadLine().Split(';') ;
+                if (provincia[0] != string.Empty)
+                {
+                    listaProvince.Add(new Provincia(provincia));
+                }
             }
             leggi.Close();
             AggiornaTutto();
@@ -242,19 +258,33 @@ namespace EU4_Province_Generator
             TxtDef2.Text = "x";
         }
 
+        //Link alla pagina steam per chiarimenti.
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
 
-        private void AggiornaLista()
+        //Per cancellare una provincia.
+        private void LstProv_KeyDown(object sender, KeyEventArgs e)
         {
-            LstProv.Items.Clear();
-            for (int i = 0; i < listaProvince.Count; i++)
+            if (e.Key == Key.Delete)
             {
-                LstProv.Items.Add($"Line: {i}".PadRight(20) + listaProvince[i].ToString(false));
+                Provincia p = listaProvince[LstProv.SelectedIndex];
+                if (MessageBox.Show($"This province definition record will be deleted permanently:\nNumber: {p.ProvNumber} - Red: {p.red} - Green: {p.green} - Blue: {p.blue} - Name: {p.desc1} - {p.desc2}", "Delete Definition", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+                {
+                    int index = LstProv.SelectedIndex;
+                    listaProvince.RemoveAt(index);
+                    AggiornaTutto();
+                }
             }
+        }
+
+        //Metodi che aggiornano sia la lista delle province da codice e da finestra.
+        private void AggiornaTutto()
+        {
+            Riscrivi();
+            AggiornaLista();
         }
 
         private void Riscrivi()
@@ -267,23 +297,12 @@ namespace EU4_Province_Generator
             sc.Close();
         }
 
-        private void AggiornaTutto()
+        private void AggiornaLista()
         {
-            Riscrivi();
-            AggiornaLista();
-        }
-
-        private void LstProv_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete)
+            LstProv.Items.Clear();
+            for (int i = 0; i < listaProvince.Count; i++)
             {
-                Provincia p = listaProvince[LstProv.SelectedIndex];
-                if(MessageBox.Show($"This province definition record will be deleted permanently:\nNumber: {p.ProvNumber} - Red: {p.red} - Green: {p.green} - Blue: {p.blue} - Name: {p.desc1} - {p.desc2}", "Delete Definition", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
-                {
-                    int index = LstProv.SelectedIndex;
-                    listaProvince.RemoveAt(index);
-                    AggiornaTutto();
-                }
+                LstProv.Items.Add($"Line: {i}".PadRight(20) + listaProvince[i].ToString(false));
             }
         }
     }
