@@ -24,7 +24,7 @@ namespace eu4_definition_editor_core
     public partial class MainWindow : Window
     {
         //Attributi di istanza della finestra.
-        private List<Provincia> listaProvince;
+        private List<Provincia> ListaProvince;
         private bool message;
         private static string percorso;
        //Costruttore.
@@ -128,7 +128,7 @@ namespace eu4_definition_editor_core
             };
             if ((bool)dialog.ShowDialog())
             {
-                listaProvince.Clear();
+                ListaProvince.Clear();
                 TxtDefPath.Text = dialog.FileName;
                 percorso = TxtDefPath.Text;
                 StreamReader leggi = null;
@@ -140,7 +140,7 @@ namespace eu4_definition_editor_core
                         string[] provincia = leggi.ReadLine().Split(';');
                         if (provincia[0] != string.Empty && int.TryParse(provincia[0], out _))
                         {
-                            listaProvince.Add(new Provincia(provincia));
+                            ListaProvince.Add(new Provincia(provincia));
                         }
                     }
                 }
@@ -150,10 +150,8 @@ namespace eu4_definition_editor_core
                 }
                 finally
                 {
-                    if (leggi != null)
-                    {
-                        leggi.Close();
-                    }
+                    LstProv.Height = ((StackPanel)LstProv.Parent).ActualHeight - 80;
+                    leggi.Close();
                     AggiornaTutto(false);
                 }
             }
@@ -212,9 +210,11 @@ namespace eu4_definition_editor_core
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             message = false;
-            listaProvince = new List<Provincia>();
+            ListaProvince = new List<Provincia>();
             TxtDef1.Text = "x";
             TxtDef2.Text = "x";
+            LstProv.ItemsSource = ListaProvince;
+            LstProv.Items.Refresh();
         }
 
         //Generazione di un colore random.
@@ -240,13 +240,13 @@ namespace eu4_definition_editor_core
             }
             BtnAdd.IsEnabled = false;
             StreamReader leggi = new StreamReader(TxtDefPath.Text, Encoding.Latin1);
-            listaProvince.Clear();
+            ListaProvince.Clear();
             while (!leggi.EndOfStream)
             {
                 string[] provincia = leggi.ReadLine().Split(';') ;
                 if (provincia[0] != string.Empty && int.TryParse(provincia[0],out _))
                 {
-                    listaProvince.Add(new Provincia(provincia));
+                    ListaProvince.Add(new Provincia(provincia));
                 }
             }
             leggi.Close();
@@ -264,21 +264,6 @@ namespace eu4_definition_editor_core
             e.Handled = true;
         }
 
-        //Per cancellare una provincia.
-        private void LstProv_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Delete)
-            {
-                Provincia p = (Provincia)(LstProv.SelectedItem);
-                if (MessageBox.Show($"This province definition record will be deleted permanently:\nNumber: {p.ProvNumber} - Red: {p.Red} - Green: {p.Green} - Blue: {p.Blue} - Name: {p.Desc1} - {p.Desc2}", "Delete Definition", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
-                {
-                    int index = LstProv.SelectedIndex;
-                    listaProvince.RemoveAt(index);
-                    AggiornaTutto(true);
-                }
-            }
-        }
-
         //Metodi che aggiornano sia la lista delle province da codice e da finestra.
         private void AggiornaTutto(bool toWrite)
         {
@@ -293,7 +278,7 @@ namespace eu4_definition_editor_core
         {
             using (StreamWriter sc = new StreamWriter(percorso, false, Encoding.Latin1))
             {
-                foreach (Provincia p in listaProvince)
+                foreach (Provincia p in ListaProvince)
                 {
                     sc.WriteLine(p);
                 }
@@ -302,7 +287,7 @@ namespace eu4_definition_editor_core
 
         private void AggiornaLista()
         {
-            LstProv.ItemsSource = listaProvince;
+            LstProv.Items.Refresh();
         }
     }
 }
