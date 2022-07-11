@@ -93,7 +93,7 @@
 
 
         <TextBlock  FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom"  Grid.Row="5" Grid.Column="0" Margin="10">
-            <Hyperlink  RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://steamcommunity.com/id/naturaljoin/">
+            <Hyperlink  RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://steamcommunity.com/id/maninthemiddle/">
                 My Steam Profile
             </Hyperlink>
         </TextBlock>
